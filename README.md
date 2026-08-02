@@ -26,6 +26,7 @@ Instead of copying install scripts between machines, register the marketplace on
 | Hook (Stop) | **plan-usage** | Per-turn token usage report as a system message after every response | ✅ |
 | Hook (Stop · Notification) | **stop-notify** | macOS notification on response completion (*Glass*) and when Claude is waiting for your input — permission requests, questions (*Ping*) | ✅ |
 | Command | **/tokens** | Ranks the current session's turns by weighted usage and explains *why* the heavy ones were heavy | ✅ |
+| Statusline | **statusline** | Model · git branch/worktree · 5h/weekly plan usage bars with reset timers · session time · context usage | ✅ |
 | Skills | — | (planned) | 🚧 |
 | Agents | — | (planned) | 🚧 |
 
@@ -76,6 +77,27 @@ python3 $SCRIPT --repair              # reconcile ledger against transcripts (--
 - Once Claude Code's transcript retention (default 30 days) cleans a session,
   recomputation (`--rank`/`--repair`) is no longer possible — the ledger keeps the last known values.
 
+## statusline — plan usage HUD
+
+```
+Model: Fable 5 | branch:main | 5h:[█░░░░░░░]7%(4h32m) wk:[█░░░░░░░]17%(5d15h) | session:6m | ctx:[█░░░░░░░░░]9%
+```
+
+Renders entirely from the JSON Claude Code pipes to the statusline command — no network calls,
+no dependencies (rate limits require a subscription/OAuth login; the segment is skipped for API-key users).
+Colors: green → yellow (≥70%) → red (≥90%).
+Inside a linked git worktree the branch segment becomes `branch:feat-x (wt:feat-x)`.
+
+Plugins can't register a statusline automatically, so add this once per machine to `~/.claude/settings.json`
+(after installing the plugin):
+
+```json
+"statusLine": {
+  "type": "command",
+  "command": "python3 \"${CLAUDE_CONFIG_DIR:-$HOME/.claude}/plugins/marketplaces/jay-plugin/scripts/statusline.py\""
+}
+```
+
 ## stop-notify — macOS notifications
 
 Two distinct sounds so you can tell them apart without looking:
@@ -113,6 +135,7 @@ The notification title is the session title (custom title first, then AI title).
 | 훅 (Stop) | plan-usage | 매 턴 종료 시 토큰 사용량 리포트를 시스템 메시지로 표시 |
 | 훅 (Stop·Notification) | stop-notify | 응답 완료(Glass음), 입력 대기 — 권한 요청·질문 — 시(Ping음) macOS 알림 |
 | 커맨드 | `/tokens` | 현재 세션의 가중 사용량 랭킹 + 왜 무거웠는지 분석 |
+| 상태줄 | statusline | 모델 · git 브랜치/워크트리 · 5h/주간 플랜 사용량 막대(리셋 타이머) · 세션 시간 · 컨텍스트 사용률 표시 |
 
 ### 주요 개념
 
