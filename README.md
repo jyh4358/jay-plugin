@@ -27,7 +27,7 @@ Instead of copying install scripts between machines, register the marketplace on
 | Hook (Stop · Notification) | **stop-notify** | macOS notification on response completion (*Glass*) and when Claude is waiting for your input — permission requests, questions (*Ping*) | ✅ |
 | Command | **/tokens** | Ranks the current session's turns by weighted usage and explains *why* the heavy ones were heavy | ✅ |
 | Statusline | **statusline** | Model · git branch/worktree · 5h/weekly plan usage bars with reset timers · session time · context usage | ✅ |
-| Skills | — | (planned) | 🚧 |
+| Skill | **/commit** | Analyzes staged changes, generates a Korean Conventional-Commits message (optional Jira ID), confirms, then commits | ✅ |
 | Agents | — | (planned) | 🚧 |
 
 New components go into their directory (`hooks/` `commands/` `skills/` `agents/`) — push, then update the plugin on each machine.
@@ -136,6 +136,7 @@ The notification title is the session title (custom title first, then AI title).
 | 훅 (Stop·Notification) | stop-notify | 응답 완료(Glass음), 입력 대기 — 권한 요청·질문 — 시(Ping음) macOS 알림 |
 | 커맨드 | `/tokens` | 현재 세션의 가중 사용량 랭킹 + 왜 무거웠는지 분석 |
 | 상태줄 | statusline | 모델 · git 브랜치/워크트리 · 5h/주간 플랜 사용량 막대(리셋 타이머) · 세션 시간 · 컨텍스트 사용률 표시 |
+| 스킬 | `/commit` | 변경사항 분석 → Conventional Commits 한국어 커밋 메시지 생성(Jira ID 지원) → 확인 후 커밋 |
 
 ### 주요 개념
 
