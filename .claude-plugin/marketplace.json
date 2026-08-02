@@ -1,0 +1,13 @@
+{
+  "name": "jay-plugin",
+  "owner": {
+    "name": "jay"
+  },
+  "plugins": [
+    {
+      "name": "jay-plugin",
+      "source": "./",
+      "description": "Jay의 Claude Code 툴박스 — 훅·커맨드·스킬·에이전트 모음"
+    }
+  ]
+}
