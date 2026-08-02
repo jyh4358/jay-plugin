@@ -28,6 +28,7 @@ Instead of copying install scripts between machines, register the marketplace on
 | Command | **/tokens** | Ranks the current session's turns by weighted usage and explains *why* the heavy ones were heavy | ✅ |
 | Statusline | **statusline** | Model · git branch/worktree · 5h/weekly plan usage bars with reset timers · session time · context usage | ✅ |
 | Skill | **/commit** | Analyzes staged changes, generates a Korean Conventional-Commits message (optional Jira ID), confirms, then commits | ✅ |
+| Skill | **/record** | Records session work into the *My Track Record* Obsidian vault as resume-ready task notes — why/how/result structure, short interview, confidentiality filter | ✅ |
 | Agents | — | (planned) | 🚧 |
 
 New components go into their directory (`hooks/` `commands/` `skills/` `agents/`) — push, then update the plugin on each machine.
@@ -137,6 +138,7 @@ The notification title is the session title (custom title first, then AI title).
 | 커맨드 | `/tokens` | 현재 세션의 가중 사용량 랭킹 + 왜 무거웠는지 분석 |
 | 상태줄 | statusline | 모델 · git 브랜치/워크트리 · 5h/주간 플랜 사용량 막대(리셋 타이머) · 세션 시간 · 컨텍스트 사용률 표시 |
 | 스킬 | `/commit` | 변경사항 분석 → Conventional Commits 한국어 커밋 메시지 생성(Jira ID 지원) → 확인 후 커밋 |
+| 스킬 | `/record` | 세션에서 한 작업을 Obsidian vault(My Track Record)에 무엇을/왜/어떻게/성과 구조의 작업 노트로 기록 — 부족한 맥락 인터뷰 + 회사 기밀 보안 필터 |
 
 ### 주요 개념
 
