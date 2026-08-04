@@ -1,6 +1,6 @@
 {
   "name": "jay-plugin",
-  "version": "0.3.1",
+  "version": "0.3.2",
   "description": "Jay의 Claude Code 툴박스 — 일상 워크플로를 위한 훅·커맨드·스킬·에이전트 모음. 토큰 사용량 리포트를 시작으로 계속 확장 중.",
   "author": {
     "name": "jay"
