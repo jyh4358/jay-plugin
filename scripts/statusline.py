@@ -4,7 +4,12 @@
 Claude Code가 statusline 명령의 stdin으로 넘겨주는 JSON만으로 렌더링한다
 (네트워크 호출·외부 의존성 없음).
 
-  Model: Fable 5 | 5h:[█░░░░░░░]4%(4h48m) wk:[█░░░░░░░]17%(5d15h) | session:3m | ctx:[█░░░░░░░░░]7%
+2행 구성이다. 1행은 길이가 변하는 정체성(모델·브랜치), 2행은 폭이 거의 고정인
+수치(플랜 사용량·세션·컨텍스트). 좌우 분할된 좁은 pane에서 한 줄로 붙이면
+'...'으로 잘려 뒷부분이 안 보이므로, 세그먼트 경계가 흔들리지 않는 고정 2행으로 나눈다.
+
+  Model: Fable 5 | branch:feat-x (wt:feat-x)
+    5h:[█░░░░░░░]4%(4h48m) wk:[█░░░░░░░]17%(5d15h) | session:3m | ctx:[█░░░░░░░░░]7%
 
 stdin 필드 (Claude Code v2.x):
   model.display_name
@@ -36,6 +41,13 @@ EMPTY = "░"
 
 WARNING_PCT = 70
 CRITICAL_PCT = 90
+
+# 세션 경과 시간 임계값(분). ctx% 와 무관하게 시간만으로 판정한다.
+SESSION_WARNING_MIN = 60
+SESSION_CRITICAL_MIN = 120
+
+# 2행 들여쓰기. 1행(정체성)과 2행(수치)을 눈으로 구분하기 위한 것.
+BODY_INDENT = "  "
 
 
 def color_for(percent):
@@ -81,6 +93,30 @@ def format_reset(resets_at):
     if days > 0:
         return f"{days}d{hours % 24}h"
     return f"{hours}h{minutes % 60}m"
+
+
+def format_duration(minutes):
+    """경과 분 → '7m' / '2h5m' / '5d3h'. 재개를 반복한 긴 세션도 한눈에 읽히게."""
+    if minutes < 60:
+        return f"{minutes}m"
+    hours = minutes // 60
+    if hours < 24:
+        return f"{hours}h{minutes % 60}m"
+    return f"{hours // 24}d{hours % 24}h"
+
+
+def session_color_for(minutes):
+    """세션 색은 경과 시간만으로 결정한다.
+
+    이전에는 ctx% 도 함께 봤는데, 그러면 경과 시간이 그대로인데도 컨텍스트가
+    차오르는 것만으로 session 색이 바뀌어 무엇을 경고하는지 알 수 없었다.
+    컨텍스트는 바로 옆 ctx 세그먼트가 이미 색으로 알려 준다.
+    """
+    if minutes >= SESSION_CRITICAL_MIN:
+        return RED
+    if minutes >= SESSION_WARNING_MIN:
+        return YELLOW
+    return GREEN
 
 
 def render_rate_window(label, window, dim_label):
@@ -156,16 +192,19 @@ def main():
         return
 
     sep = f" {DIM}|{RESET} "
-    segments = []
 
+    # 1행: 정체성. 브랜치·워크트리 이름 때문에 길이가 크게 변하는 부분만 모은다.
+    head = []
     model = (data.get("model") or {}).get("display_name") or (data.get("model") or {}).get("id")
     if model:
-        segments.append(f"Model: {model}")
+        head.append(f"Model: {model}")
 
     git_part = git_segment(data)
     if git_part:
-        segments.append(git_part)
+        head.append(git_part)
 
+    # 2행: 수치. 게이지 폭이 고정이라 숫자만 변동해 전체 폭이 거의 일정하다.
+    body = []
     limits = data.get("rate_limits") or {}
     rate_parts = [
         p
@@ -176,22 +215,19 @@ def main():
         if p
     ]
     if rate_parts:
-        segments.append(" ".join(rate_parts))
+        body.append(" ".join(rate_parts))
 
     ctx_pct = context_percent(data)
 
     minutes = int(((data.get("cost") or {}).get("total_duration_ms") or 0) // 60_000)
-    if minutes > 120 or ctx_pct > 85:
-        session_color = RED
-    elif minutes > 60 or ctx_pct > 70:
-        session_color = YELLOW
-    else:
-        session_color = GREEN
-    segments.append(f"session:{session_color}{minutes}m{RESET}")
+    body.append(f"session:{session_color_for(minutes)}{format_duration(minutes)}{RESET}")
 
-    segments.append(f"ctx:{bar(ctx_pct, CTX_BAR_WIDTH)}{color_for(ctx_pct)}{ctx_pct}%{RESET}")
+    body.append(f"ctx:{bar(ctx_pct, CTX_BAR_WIDTH)}{color_for(ctx_pct)}{ctx_pct}%{RESET}")
 
-    print(sep.join(segments))
+    # head 가 비면(모델·git 둘 다 없음) 빈 행을 만들지 않는다.
+    if head:
+        print(sep.join(head))
+    print(BODY_INDENT + sep.join(body))
 
 
 if __name__ == "__main__":

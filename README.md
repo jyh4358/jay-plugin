@@ -81,12 +81,20 @@ python3 $SCRIPT --repair              # reconcile ledger against transcripts (--
 ## statusline — plan usage HUD
 
 ```
-Model: Fable 5 | branch:main | 5h:[█░░░░░░░]7%(4h32m) wk:[█░░░░░░░]17%(5d15h) | session:6m | ctx:[█░░░░░░░░░]9%
+Model: Fable 5 | branch:main
+  5h:[█░░░░░░░]7%(4h32m) wk:[█░░░░░░░]17%(5d15h) | session:6m | ctx:[█░░░░░░░░░]9%
 ```
+
+Two rows: the first holds the identity segments that vary in length (model, branch/worktree),
+the second the near-fixed-width numbers. A single row overflows a split pane and gets cut with
+`...`, and wrapping it would move the segment boundaries on every refresh — a fixed split keeps
+each value in the same place.
 
 Renders entirely from the JSON Claude Code pipes to the statusline command — no network calls,
 no dependencies (rate limits require a subscription/OAuth login; the segment is skipped for API-key users).
 Colors: green → yellow (≥70%) → red (≥90%).
+`session` is colored by elapsed time alone (≥60m yellow, ≥120m red) and formatted `7m` / `2h5m` / `5d3h`;
+context pressure is already reported by the `ctx` segment next to it.
 Inside a linked git worktree the branch segment becomes `branch:feat-x (wt:feat-x)`.
 
 Plugins can't register a statusline automatically, so add this once per machine to `~/.claude/settings.json`
