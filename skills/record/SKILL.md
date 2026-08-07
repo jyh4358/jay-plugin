@@ -1,7 +1,7 @@
 ---
 name: record
-description: 세션에서 수행한 작업(회사 업무·개인 공부·사이드 프로젝트)을 Obsidian vault 'My Track Record'에 작업 단위 기록 노트로 남긴다. 사용자가 "/record", "오늘 한 일 기록해줘", "세션 정리하자", "작업 기록 남기자", "이력서용으로 정리해줘" 같이 세션을 마무리하며 기록을 남기려는 신호를 줄 때 사용. 세션 맥락에서 무엇을/왜/어떻게/성과를 뽑아 초안을 만들고, 부족한 맥락은 최대 3개 질문으로 인터뷰하며, 회사 기록이면 보안 체크리스트로 기밀을 걸러낸 뒤 사용자 확인을 받고 저장한다.
-allowed-tools: Read, Write, Edit, Bash, Glob, Grep, AskUserQuestion
+description: 세션에서 수행한 작업(회사 업무·개인 공부·사이드 프로젝트)을 Obsidian vault 'My Track Record'에 작업 단위 기록 노트로 남긴다. 사용자가 "/record", "오늘 한 일 기록해줘", "세션 정리하자", "작업 기록 남기자", "이력서용으로 정리해줘" 같이 세션을 마무리하며 기록을 남기려는 신호를 줄 때 사용. 세션 맥락에서 무엇을/왜/어떻게/성과를 뽑아 초안을 만들고, 부족한 맥락은 최대 3개 질문으로 인터뷰하며, 회사 기록이면 보안 체크리스트로 기밀을 걸러낸 뒤 사용자 확인을 받고 저장한다. 개별 지식·개념 정리("무엇을 알게 됐다")는 learn 스킬 담당 — 이 스킬은 작업("무엇을 했다") 단위 기록을 다룬다.
+allowed-tools: Read, Write, Edit, Bash, Glob, Grep, AskUserQuestion, Skill
 user-invocable: true
 ---
 
@@ -30,12 +30,9 @@ user-invocable: true
 
 ## 2. 기존 노트 확인 — 중복 생성 금지
 
-같은 작업의 노트가 이미 있는지 두 단계로 확인한다:
+같은 작업의 기존 노트가 있는지 `10-회사/`, `20-개인/`을 제목·summary·project·tech 키워드로 Grep한다 — 완료했던 작업을 다시 이어가는 경우가 여기서 잡힌다.
 
-1. **진행 중 목록 우선**: `10-회사/`, `20-개인/`에서 `status: ongoing`인 노트를 전부 나열한다(Grep). 이어서 하는 작업은 대부분 이 목록에 있다 — 이번 작업과 같은 것이 있는지 제목·summary로 대조한다.
-2. **키워드 검색 보조**: 1에서 못 찾았으면 제목·summary·project·tech 키워드로 전체를 Grep한다(완료된 작업을 다시 이어가는 경우 대비).
-
-**기존 노트가 있으면 새 노트를 만들지 말고 그 노트를 업데이트한다**: 본문 보강 + `## 진행 이력`에 오늘 날짜 한 줄 append + frontmatter `updated` 갱신. 작업이 끝났으면 `status: done` + `date_end` 기록. 같은 작업인지 새 작업인지 애매하면 사용자에게 확인한다.
+**기존 노트가 있으면 새 노트를 만들지 말고 그 노트를 업데이트한다**: 본문 보강 + `## 진행 이력`에 오늘 날짜 한 줄 append + frontmatter `updated` 갱신 + `date_end`를 최신 완료일로 갱신. 같은 작업인지 새 작업인지 애매하면 사용자에게 확인한다.
 
 ## 3. 인터뷰 — 최대 3문항
 
@@ -76,6 +73,7 @@ user-invocable: true
 - `project`가 있으면 `<org 폴더>/projects/<프로젝트명>.md` 허브 노트를 확인하고, 없으면 `99-템플릿/Project.md` 구조로 생성한다 (개요·내 역할은 사용자에게 한 줄씩 받는다).
 - 허브의 `## 작업 목록`에 이번 노트 링크를 추가하고, 작업 노트의 `## 관련`에 `[[<프로젝트명>]]`을 기입한다. **Dataview 쿼리는 그래프 엣지를 만들지 않으므로 wikilink를 실제로 기입해야 한다.**
 - 연관 작업을 vault에서 찾아 `## 관련`에 상호 링크를 제안한다. 탐색 순서: 같은 `project`의 노트 → frontmatter `tech`가 겹치는 노트 → 제목·summary 키워드 Grep. 진짜 관련(같은 시스템, 선행/후속, 같은 문제의식)만 링크하고 억지로 잇지 않는다 — 독립 작업이 고립 노드로 남는 것은 정상이다.
+- 이번 세션에서 /learn으로 만든 학습 노트가 있으면 작업 노트와 상호 링크한다. 없어도 `30-학습/`을 tech·키워드로 탐색해 진짜 관련인 학습 노트만 잇는다 — learn은 세션 중간에 실행되어 그 시점엔 worklog가 없으므로, 학습↔작업 연결은 여기서만 생긴다.
 
 ## 7. frontmatter 스키마 — 일관성 엄수
 
@@ -85,7 +83,7 @@ user-invocable: true
 | type | `worklog` | 고정 (프로젝트 허브는 `project`) |
 | org | 회사 표기 또는 `personal` | config의 defaultOrg 활용 |
 | project | 프로젝트명 | 허브 노트 파일명과 동일. 없으면 빈 값 |
-| status | `ongoing` \| `done` | done이면 date_end 필수 |
+| status | `done` 고정 | 완결된 작업만 기록하므로 worklog는 항상 done (`ongoing`은 프로젝트 허브 전용). date_end 필수 |
 | date_start / date_end | YYYY-MM-DD | 절대 날짜만 |
 | updated | YYYY-MM-DD | 수정할 때마다 갱신 |
 | work_type | feature \| improvement \| bugfix \| troubleshoot \| ops \| research \| study | 하나만 |
@@ -105,5 +103,6 @@ user-invocable: true
 ## 9. 마무리
 
 - 생성·수정한 파일 목록을 보고한다.
+- 세션에 /learn으로 남기지 않은 **학습 노트감**(작업과 별개로 기억할 가치가 있는 원리·기법·개념 — "무엇을 했다"가 아니라 "무엇을 알게 됐다")이 보이면 후보를 제시하고 만들지 묻는다. 만들기로 하면 learn 스킬을 호출해 만들고, 작업 노트의 `## 관련`에도 링크해 상호 링크를 완성한다. 명백한 후보가 없으면 묻지 않는다 — 억지 후보 금지.
 - vault가 git 저장소면: 시작 전 `git pull`, 저장 후 커밋·push 여부를 물어 진행한다. git 미사용 상태면 전부 생략.
 - 이 지시문 내용을 노트에 옮겨 적지 않는다.

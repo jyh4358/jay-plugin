@@ -29,6 +29,8 @@ Instead of copying install scripts between machines, register the marketplace on
 | Statusline | **statusline** | Model · git branch/worktree · 5h/weekly plan usage bars with reset timers · session time · context usage | ✅ |
 | Skill | **/commit** | Analyzes staged changes, generates a Korean Conventional-Commits message (optional Jira ID), confirms, then commits | ✅ |
 | Skill | **/record** | Records session work into the *My Track Record* Obsidian vault as resume-ready task notes — why/how/result structure, short interview, confidentiality filter | ✅ |
+| Skill | **/record-review** | Monthly vault maintenance — re-evaluates resume/impact on work notes, checks frontmatter & wikilink integrity across work/learning notes (report → confirm → apply) | ✅ |
+| Skill | **/learn** | Captures things learned mid-session (or user-specified concepts) into the vault as knowledge notes — fixed frontmatter, free-form body, "why" required, always-on generalization filter | ✅ |
 | Agents | — | (planned) | 🚧 |
 
 New components go into their directory (`hooks/` `commands/` `skills/` `agents/`) — push, then update the plugin on each machine.
@@ -147,6 +149,8 @@ The notification title is the session title (custom title first, then AI title).
 | 상태줄 | statusline | 모델 · git 브랜치/워크트리 · 5h/주간 플랜 사용량 막대(리셋 타이머) · 세션 시간 · 컨텍스트 사용률 표시 |
 | 스킬 | `/commit` | 변경사항 분석 → Conventional Commits 한국어 커밋 메시지 생성(Jira ID 지원) → 확인 후 커밋 |
 | 스킬 | `/record` | 세션에서 한 작업을 Obsidian vault(My Track Record)에 무엇을/왜/어떻게/성과 구조의 작업 노트로 기록 — 부족한 맥락 인터뷰 + 회사 기밀 보안 필터 |
+| 스킬 | `/record-review` | vault 월간 점검 — 작업 노트 resume·impact 재평가, 작업·학습 노트 frontmatter·wikilink 무결성 점검 (리포트 → 확인 → 반영) |
+| 스킬 | `/learn` | 세션 중 새로 알게 된 것·개념 정리를 학습 노트로 기록 — frontmatter 고정 + 본문 자유, '왜/원리' 필수, 일반화 필터 상시 적용 |
 
 ### 주요 개념
 
